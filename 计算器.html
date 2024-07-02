@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>计算器</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid black;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    th.product-code,
+    td.product-code,
+    th.price,
+    td.price {
+      min-width: 60px;
+      width: 100px;
+    }
+
+    th.quantity,
+    td.quantity {
+      min-width: 60px;
+      width: auto;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .price-sum {
+      font-size: 16px;
+      font-weight: 600;
+      color: red;
+    }
+
+    button {
+      margin-right: 20px;
+    }
+
+
+
+    .header {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .time {
+      float: left;
+
+    }
+
+    .job-number {
+      float: left;
+      width: 100px !important;
+      margin: 0 20px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="header">
+      <span class="time">{{getCurrentDate()}}</span>
+      <input type="text" class="job-number" v-model="jobNumber" placeholder="工号">
+      #工资
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="product-code">款号</th>
+            <th class="price">单价/元</th>
+            <th class="quantity" v-for="(col, index) in columns" :key="index">{{ col }}</th>
+            <th>小计/元</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
+            <td class="product-code"><input type="text" v-model="row.productCode" placeholder="款号"></td>
+            <td class="price"><input type="number" v-model.number="row.price" placeholder="单价"></td>
+            <td class="quantity" v-for="(col, colIndex) in columns" :key="colIndex">
+              <input type="number" v-model.number="row.quantities[colIndex]" value="0">
+            </td>
+            <td><span class="price-sum">{{ calculateRowPrice(row) }}元</span> 第{{rowIndex + 1}}床</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button @click="addRow">新增行</button>
+    <button @click="addColumn">新增列</button>
+    <button @click="calculateTotal">汇总</button>
+    <p>总价格: <span class="price-sum">{{ total }}元</span></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        jobNumber: 2,
+        columns: ['数量A'],
+        rows: [
+          {productCode: '', price: null, quantities: [null]}
+        ],
+        total: 0
+      },
+      methods: {
+        addRow() {
+          const newRow = {productCode: '', price: null, quantities: Array(this.columns.length).fill(null)};
+          this.rows.push(newRow);
+        },
+        addColumn() {
+          const newCol = '数量' + String.fromCharCode(65 + this.columns.length);
+          this.columns.push(newCol);
+          this.rows.forEach(row => row.quantities.push(null));
+        },
+        calculateRowPrice(row) {
+          let totalQuantity = row.quantities.reduce((acc, qty) => acc + qty, 0);
+          return (row.price * totalQuantity).toFixed(2);
+        },
+        calculateTotal() {
+          this.total = this.rows.reduce((acc, row) => {
+            let totalQuantity = row.quantities.reduce((acc, qty) => acc + qty, 0);
+            return acc + row.price * totalQuantity;
+          }, 0).toFixed(2);
+        },
+        getCurrentDate() {
+          const today = new Date();
+          const yyyy = today.getFullYear();
+          const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+          const dd = String(today.getDate()).padStart(2, '0');
+          return `${yyyy}-${mm}`;
+        },
+      }
+    });
+  </script>
+</body>
+
+</html>
