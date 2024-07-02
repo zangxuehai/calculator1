@@ -37,7 +37,10 @@
       min-width: 60px;
       width: auto;
     }
-
+    th.price-chuang,
+    td.price-chuang {
+      width: 150px;
+    }
     input[type="number"],
     input[type="text"] {
       width: 100%;
@@ -95,7 +98,7 @@
             <th class="product-code">款号</th>
             <th class="price">单价/元</th>
             <th class="quantity" v-for="(col, index) in columns" :key="index">{{ col }}</th>
-            <th>小计/元</th>
+            <th class="price-chuang">小计/元</th>
           </tr>
         </thead>
         <tbody>
@@ -105,7 +108,7 @@
             <td class="quantity" v-for="(col, colIndex) in columns" :key="colIndex">
               <input type="number" v-model.number="row.quantities[colIndex]" value="0">
             </td>
-            <td><span class="price-sum">{{ calculateRowPrice(row) }}元</span> 第{{rowIndex + 1}}床</td>
+            <td class="price-chuang"><span class="price-sum">{{ calculateRowPrice(row) }}元</span> 第{{rowIndex + 1}}床</td>
           </tr>
         </tbody>
       </table>
