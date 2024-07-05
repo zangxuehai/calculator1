@@ -21,20 +21,22 @@
     th,
     td {
       padding: 10px;
+      padding-right: 20px;
       text-align: center;
+      box-sizing: border-box;
     }
 
     th.product-code,
     td.product-code,
     th.price,
     td.price {
-      min-width: 60px;
+      min-width: 70px;
       width: 100px;
     }
 
     th.quantity,
     td.quantity {
-      min-width: 60px;
+      min-width: 70px;
       width: auto;
     }
     th.price-chuang,
@@ -62,14 +64,11 @@
       font-weight: 600;
       color: blue;
     }
-    
 
     button {
       margin-right: 20px;
       margin-bottom: 10px;
     }
-
-
 
     .header {
       font-size: 20px;
@@ -132,9 +131,9 @@
     </div>
     <button @click="addRow">新增行</button>
     <button @click="addColumn">新增列</button>
-    <button @click="calculateTotalNum">数量汇总</button>
-    <button @click="calculateTotal">金额汇总</button>
-    <button @click="takeScreenshot">生成截图</button>
+    <button @click="calculateTotal" style="color: red;">金额汇总</button>
+    <button @click="calculateTotalNum" style="color: blue;">数量汇总</button>
+    <button @click="takeScreenshot" style="color: green;">生成截图</button>
     
     <p>金额合计: <span class="price-sum">{{ total }}元</span></p>
     <p>数量合计: <span class="total-num">{{ totalNum }}件</span></p>
@@ -171,15 +170,17 @@
           let totalQuantity = row.quantities.reduce((acc, qty) => acc + qty, 0);
           return (row.price * totalQuantity).toFixed(2);
         },
-        calculateTotalNum() {
-          this.totalNum = this.rows.reduce((acc, row) => {
-            return row.quantities.reduce((acc, qty) => acc + qty, 0);
-          }, 0).toFixed(2);
-        },
+        
         calculateTotal() {
           this.total = this.rows.reduce((acc, row) => {
             let totalQuantity = row.quantities.reduce((acc, qty) => acc + qty, 0);
             return acc + row.price * totalQuantity;
+          }, 0).toFixed(2);
+        },
+        calculateTotalNum() {
+          this.totalNum = this.rows.reduce((acc, row) => {
+            let totalQuantity = row.quantities.reduce((acc, qty) => acc + qty, 0);
+            return acc + totalQuantity;
           }, 0).toFixed(2);
         },
         getCurrentDate() {
