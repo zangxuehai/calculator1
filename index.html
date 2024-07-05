@@ -48,6 +48,7 @@
 
     .table-container {
       overflow-x: auto;
+      margin-bottom: 10px;
     }
 
     .price-sum {
@@ -56,8 +57,16 @@
       color: red;
     }
 
+    .total-num {
+      font-size: 16px;
+      font-weight: 600;
+      color: blue;
+    }
+    
+
     button {
       margin-right: 20px;
+      margin-bottom: 10px;
     }
 
 
@@ -66,11 +75,13 @@
       font-size: 20px;
       font-weight: 600;
       margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .time {
-      float: left;
-
+    .right {
+      display: flex;
     }
 
     .job-number {
@@ -90,15 +101,17 @@
   <div id="app">
     <div class="table-container">
       <div class="header">
-        <span class="time">{{getCurrentDate()}}</span>
-        <input type="text" class="job-number" v-model="jobNumber" placeholder="工号">
-        #工资
+        <span class="time">{{getCurrentDate()}}工资</span>
+        <div class="right">
+          <span>工号:</span>
+          <input type="text" class="job-number" v-model="jobNumber" placeholder="工号">
+        </div>
       </div>
       <table>
         <thead>
           <tr>
             <th class="index">序号</th>
-            <th class="product-code">款号</th>
+            <!-- <th class="product-code">款号</th> -->
             <th class="price">单价/元</th>
             <th class="quantity" v-for="(col, index) in columns" :key="index">{{ col }}</th>
             <th class="price-chuang">小计/元</th>
@@ -107,7 +120,7 @@
         <tbody>
           <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
             <td class="index">{{rowIndex + 1}}</td>
-            <td class="product-code"><input type="text" v-model="row.productCode" placeholder="款号"></td>
+            <!-- <td class="product-code"><input type="text" v-model="row.productCode" placeholder="款号"></td> -->
             <td class="price"><input type="number" v-model.number="row.price" placeholder="单价"></td>
             <td class="quantity" v-for="(col, colIndex) in columns" :key="colIndex">
               <input type="number" v-model.number="row.quantities[colIndex]" value="0">
@@ -119,10 +132,12 @@
     </div>
     <button @click="addRow">新增行</button>
     <button @click="addColumn">新增列</button>
-    <button @click="calculateTotal">汇总</button>
+    <button @click="calculateTotalNum">数量汇总</button>
+    <button @click="calculateTotal">金额汇总</button>
     <button @click="takeScreenshot">生成截图</button>
     
-    <p>合计: <span class="price-sum">{{ total }}元</span></p>
+    <p>金额合计: <span class="price-sum">{{ total }}元</span></p>
+    <p>数量合计: <span class="total-num">{{ totalNum }}件</span></p>
     <img id="screenshot" v-if="screenshot" :src="screenshot" alt="Table Screenshot">
   </div>
 
@@ -138,7 +153,8 @@
         rows: [
           {productCode: '', price: null, quantities: [null]}
         ],
-        total: 0
+        total: 0,
+        totalNum: 0
       },
       methods: {
         addRow() {
@@ -153,6 +169,11 @@
         calculateRowPrice(row) {
           let totalQuantity = row.quantities.reduce((acc, qty) => acc + qty, 0);
           return (row.price * totalQuantity).toFixed(2);
+        },
+        calculateTotalNum() {
+          this.totalNum = this.rows.reduce((acc, row) => {
+            return row.quantities.reduce((acc, qty) => acc + qty, 0);
+          }, 0).toFixed(2);
         },
         calculateTotal() {
           this.total = this.rows.reduce((acc, row) => {
